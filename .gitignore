@@ -22,3 +22,7 @@ htmlcov/
 .coverage
 .coverage.*
 *,cover
+
+# Other files
+requirements.txt
+notes.md
