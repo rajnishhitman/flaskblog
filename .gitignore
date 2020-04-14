@@ -26,3 +26,4 @@ htmlcov/
 # Other files
 requirements.txt
 notes.md
+temp.py
