@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 
 from flaskblog import app, bcrypt, db
 from flaskblog.forms import RegistrationForm, LoginForm
-from flaskblog.models import User, Post
+from flaskblog.models import User
 
 posts = [
     {

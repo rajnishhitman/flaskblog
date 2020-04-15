@@ -16,4 +16,4 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 
-from flaskblog import routes
+from flaskblog import routes # pylint: disable=wrong-import-position

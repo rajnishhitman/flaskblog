@@ -1,6 +1,7 @@
 from datetime import datetime
-from flaskblog import db, login_manager
 from flask_login import UserMixin
+
+from flaskblog import db, login_manager
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -27,4 +28,8 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return f"Post(title='{self.title}', date_posted='{self.date_posted}', user_id='{self.user_id}')"
+        return "Post(title='{}', date_posted='{}', user_id='{}')".format(
+            self.title,
+            self.date_posted,
+            self.user_id
+        )

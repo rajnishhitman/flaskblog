@@ -37,7 +37,12 @@ class RegistrationForm(FlaskForm):
 
     def validate_password(self, password):
         if re.search(self.email_pattern, password.data) is None:
-            raise ValidationError("Password field must have at least 6 characters including at least one digit, one lowercase letter, one capital letter, and one special character (!, @, #, $, %, ¨, &)")
+            message = (
+                "Password field must have at least 6 characters including at least" +
+                " one digit, one lowercase letter, one capital letter, and one special character" +
+                "(!, @, #, $, %, ¨, &)"
+                )
+            raise ValidationError(message)
 
 
 class LoginForm(FlaskForm):
