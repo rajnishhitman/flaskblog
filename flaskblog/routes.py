@@ -87,7 +87,7 @@ def save_picture(form_picture):
     # Resize image before saving it
     output_image = (125, 125)
     image = Image.open(form_picture)
-    image = image.resize(output_image)
+    image.thumbnail(output_image)
     image.save(picture_path)
     return picture_name
 
