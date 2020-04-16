@@ -1,33 +1,19 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, abort
 from flask_login import login_user, logout_user, current_user, login_required
 
 from flaskblog import app, bcrypt, db
-from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm
-from flaskblog.models import User
+from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
+from flaskblog.models import User, Post
 from flaskblog.globals import default_image
-
-posts = [
-    {
-        "author": "Marcus Reaiche",
-        "title": "Blog Post 1",
-        "content": "First post content",
-        "date_posted": "April 12, 2020"
-    },
-    {
-        "author": "John Doe",
-        "title": "Blog Post 2",
-        "content": "Second post content",
-        "date_posted": "April 12, 2020"
-    }
-]
 
 
 @app.route("/")
 @app.route("/home")
 def home():
+    posts = Post.query.all()
     return render_template("home.html", posts=posts)
 
 
@@ -121,3 +107,62 @@ def account():
         form.email.data = current_user.email
     image_file = url_for("static", filename=f"profile_pics/{current_user.image_file}")
     return render_template("account.html", title="Account", image_file=image_file, form=form)
+
+
+@app.route("/post/new", methods=["GET", "POST"])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        # Update database
+        post_ = Post(title=form.title.data, content=form.content.data, user_id=current_user.id)
+        db.session.add(post_)
+        db.session.commit()
+        # Message
+        flash("Your post has been created", "success")
+        # Redirect to home
+        return redirect(url_for("home"))
+    return render_template("create_post.html", title="New Post", form=form)
+
+
+@app.route("/post/<int:post_id>")
+def post(post_id):
+    post_ = Post.query.get_or_404(post_id)
+    return render_template("post.html", post=post_, title=post_.title)
+
+
+@app.route("/post/<int:post_id>/update", methods=["GET", "POST"])
+@login_required
+def update_post(post_id):
+    post_ = Post.query.get_or_404(post_id)
+    if post_.author != current_user:
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        # Update database
+        post_.title = form.title.data
+        post_.content = form.content.data
+        db.session.commit()
+        flash("Your post has been updated!", "success")
+        return redirect(url_for("post", post_id=post_.id))
+    elif request.method == "GET":
+        form.title.data = post_.title
+        form.content.data = post_.content
+    return render_template(
+        "create_post.html",
+        post=post_,
+        title="Update Post",
+        legend="Update Post",
+        form=form
+    )
+
+@app.route("/post/<int:post_id>/delete", methods=["POST"])
+@login_required
+def delete_post(post_id):
+    post_ = Post.query.get_or_404(post_id)
+    if post_.author != current_user:
+        abort(403)
+    db.session.delete(post_)
+    db.session.commit()
+    flash("Your post has been deleted!", "success")
+    return redirect(url_for("home"))
