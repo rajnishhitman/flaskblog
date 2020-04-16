@@ -27,3 +27,5 @@ htmlcov/
 requirements.txt
 notes.md
 temp.py
+flaskblog/static/profile_pics/
+flaskblog/site.db
