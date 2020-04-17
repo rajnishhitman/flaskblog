@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Home Page</h1>
+    <h1 class="mb-3">Post by {{ user.username }} ({{ posts.total }})</h1>
     {% for post in posts.items %}
       <article class="media content-section">
         <img
@@ -23,19 +23,22 @@
         </div>
       </article>
     {% endfor %}
-    <div class="pagination" style="margin: 0 auto; width: 230px; display: flex; justify-content: center;">
+    <div
+        style="margin: 0 auto; width: 230px; display: flex; justify-content: center;"
+        class="pagination"
+    >
         {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
             {% if page_num %}
                 {% if posts.page == page_num %}
                     <a
-                        href="{{ url_for('home', page=page_num) }}"
+                        href="{{ url_for('user_posts', username=user.username, page=page_num) }}"
                         class="btn btn-info mb-30 mr-1 ml-1"
                     >
                         {{ page_num }}
                     </a>
                 {% else %}
                     <a
-                        href="{{ url_for('home', page=page_num) }}"
+                        href="{{ url_for('user_posts', username=user.username, page=page_num) }}"
                         class="btn btn-outline-info mb-30 mr-1 ml-1"
                     >
                         {{ page_num }}
@@ -46,5 +49,4 @@
             {% endif %}
         {% endfor %}
     </div>
-
 {% endblock content %}
