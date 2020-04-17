@@ -7,7 +7,14 @@ from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationE
 
 from flaskblog.models import User
 
-password_pattern = re.compile(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%¨&\*\(\)])(?=.{6,})")
+password_validator = {
+    "pattern": re.compile(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%¨&\*\(\)])(?=.{6,})"),
+    "error_message": (
+                "Password field must have at least 6 characters including at least" +
+                " one digit, one lowercase letter, one capital letter, and one special character" +
+                "(!, @, #, $, %, ¨, &)"
+    )
+}
 
 
 class RegistrationForm(FlaskForm):
@@ -40,13 +47,8 @@ class RegistrationForm(FlaskForm):
             raise ValidationError("This email is taken. Please choose another one.")
 
     def validate_password(self, password):
-        if re.search(password_pattern, password.data) is None:
-            message = (
-                "Password field must have at least 6 characters including at least" +
-                " one digit, one lowercase letter, one capital letter, and one special character" +
-                "(!, @, #, $, %, ¨, &)"
-                )
-            raise ValidationError(message)
+        if re.search(password_validator["pattern"], password.data) is None:
+            raise ValidationError(password_validator["error_message"])
 
 
 class LoginForm(FlaskForm):
@@ -97,3 +99,26 @@ class PostForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     content = TextAreaField("Content", validators=[DataRequired()])
     submit = SubmitField("Post")
+
+
+class RequestResetForm(FlaskForm):
+    email = StringField("Email", validators=[
+        DataRequired(),
+        Email()
+    ])
+    submit = SubmitField("Request Password Reset")
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError("There is no account with that email. Please register first.")
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField("Password", validators=[DataRequired()])
+    confirm_password = PasswordField("Confirm Password", validators=[EqualTo("password")])
+    submit = SubmitField("Reset Password")
+
+    def validate_password(self, password):
+        if re.search(password_validator["pattern"], password.data) is None:
+            raise ValidationError(password_validator["error_message"])

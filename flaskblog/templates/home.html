@@ -23,7 +23,7 @@
         </div>
       </article>
     {% endfor %}
-    <div class="pagination" style="margin: 0 auto; width: 230px; display: flex; justify-content: center;">
+    <div class="pagination" style="margin: 0 auto; margin-bottom: 30px; width: 230px; display: flex; justify-content: center;">
         {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
             {% if page_num %}
                 {% if posts.page == page_num %}
