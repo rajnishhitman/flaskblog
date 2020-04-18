@@ -21,9 +21,14 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt()
 # Login manager
 login_manager = LoginManager(app)
-login_manager.login_view = "login"
+login_manager.login_view = "user.login"
 login_manager.login_message_category = "info"
 # Mail
 mail = Mail(app)
 
-from flaskblog import routes # pylint: disable=wrong-import-position
+from flaskblog.users.routes import users # pylint: disable=wrong-import-position
+from flaskblog.posts.routes import posts # pylint: disable=wrong-import-position
+from flaskblog.main.routes import main # pylint: disable=wrong-import-position
+app.register_blueprint(users)
+app.register_blueprint(posts)
+app.register_blueprint(main)
