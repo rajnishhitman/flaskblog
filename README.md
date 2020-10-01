@@ -1,2 +1,2 @@
-# flaskblog
-Flaskblog Tutorial by Corey Schafer
+# Flask-Blog
+Flask(A micro-framework in python) Tutorial by Corey Schafer
